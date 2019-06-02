@@ -823,7 +823,7 @@ var SceneManager = new Class({
 
     /**
      * Returns an array of all the current Scenes being managed by this Scene Manager.
-     * 
+     *
      * You can filter the output by the active state of the Scene and choose to have
      * the array returned in normal or reversed order.
      *
@@ -1144,6 +1144,14 @@ var SceneManager = new Class({
             return this;
         }
 
+        if (data)
+        {
+            if (data.hasOwnProperty('pauseAllScenes'))
+            {
+                this.pauseAllScenes(key);
+            }
+        }
+
         var scene = this.getScene(key);
 
         if (scene)
@@ -1161,25 +1169,25 @@ var SceneManager = new Class({
                 scene.sys.start(data);
 
                 var loader;
-    
+
                 if (scene.sys.load)
                 {
                     loader = scene.sys.load;
                 }
-    
+
                 //  Files payload?
                 if (loader && scene.sys.settings.hasOwnProperty('pack'))
                 {
                     loader.reset();
-    
+
                     if (loader.addPack({ payload: scene.sys.settings.pack }))
                     {
                         scene.sys.settings.status = CONST.LOADING;
-    
+
                         loader.once(LoaderEvents.COMPLETE, this.payloadComplete, this);
-    
+
                         loader.start();
-    
+
                         return this;
                     }
                 }
@@ -1198,16 +1206,17 @@ var SceneManager = new Class({
      * @since 3.0.0
      *
      * @param {string} key - The Scene to stop.
+     * @param {object} data - The data to be sent.
      *
      * @return {Phaser.Scenes.SceneManager} This SceneManager.
      */
-    stop: function (key)
+    stop: function (key, data)
     {
         var scene = this.getScene(key);
 
         if (scene && !scene.sys.isTransitioning())
         {
-            scene.sys.shutdown();
+            scene.sys.shutdown(data);
         }
 
         return this;
