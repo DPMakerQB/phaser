@@ -610,6 +610,11 @@ var SceneManager = new Class({
             settings.status = CONST.CREATING;
 
             scene.create.call(scene, settings.data);
+
+            if (settings.status === CONST.DESTROYED)
+            {
+                return;
+            }
         }
 
         if (settings.isTransition)
