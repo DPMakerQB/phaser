@@ -259,6 +259,9 @@ var Pointer = new Class({
 
         /**
          * The x position of this Pointer, translated into the coordinate space of the most recent Camera it interacted with.
+         * 
+         * If you wish to use this value _outside_ of an input event handler then you should update it first by calling
+         * the `Pointer.updateWorldPoint` method.
          *
          * @name Phaser.Input.Pointer#worldX
          * @type {number}
@@ -269,6 +272,9 @@ var Pointer = new Class({
 
         /**
          * The y position of this Pointer, translated into the coordinate space of the most recent Camera it interacted with.
+         * 
+         * If you wish to use this value _outside_ of an input event handler then you should update it first by calling
+         * the `Pointer.updateWorldPoint` method.
          *
          * @name Phaser.Input.Pointer#worldY
          * @type {number}
@@ -439,6 +445,22 @@ var Pointer = new Class({
         this.active = (id === 0) ? true : false;
 
         /**
+         * Is this pointer Pointer Locked?
+         * 
+         * Only a mouse pointer can be locked and it only becomes locked when requested via
+         * the browsers Pointer Lock API.
+         * 
+         * You can request this by calling the `this.input.mouse.requestPointerLock()` method from
+         * a `pointerdown` or `pointerup` event handler.
+         *
+         * @name Phaser.Input.Pointer#locked
+         * @readonly
+         * @type {boolean}
+         * @since 3.19.0
+         */
+        this.locked = false;
+
+        /**
          * The horizontal scroll amount that occurred due to the user moving a mouse wheel or similar input device.
          *
          * @name Phaser.Input.Pointer#deltaX
@@ -468,6 +490,40 @@ var Pointer = new Class({
          * @since 3.18.0
          */
         this.deltaZ = 0;
+    },
+
+    /**
+     * Takes a Camera and updates this Pointer's `worldX` and `worldY` values so they are
+     * the result of a translation through the given Camera.
+     * 
+     * Note that the values will be automatically replaced the moment the Pointer is
+     * updated by an input event, such as a mouse move, so should be used immediately.
+     *
+     * @method Phaser.Input.Pointer#updateWorldPoint
+     * @since 3.19.0
+     *
+     * @param {Phaser.Cameras.Scene2D.Camera} camera - The Camera which is being tested against.
+     *
+     * @return {this} This Pointer object.
+     */
+    updateWorldPoint: function (camera)
+    {
+        var x = this.x;
+        var y = this.y;
+
+        if (camera.resolution !== 1)
+        {
+            x += camera._x;
+            y += camera._y;
+        }
+
+        //  Stores the world point inside of tempPoint
+        var temp = camera.getWorldPoint(x, y);
+
+        this.worldX = temp.x;
+        this.worldY = temp.y;
+
+        return this;
     },
 
     /**
@@ -634,11 +690,11 @@ var Pointer = new Class({
         //  Sets the local x/y properties
         this.manager.transformPointer(this, event.pageX, event.pageY, true);
 
-        if (this.manager.mouse.locked)
+        if (this.locked)
         {
             //  Multiple DOM events may occur within one frame, but only one Phaser event will fire
-            this.movementX += event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-            this.movementY += event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+            this.movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+            this.movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
         }
 
         this.moveTime = event.timeStamp;

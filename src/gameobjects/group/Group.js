@@ -1136,22 +1136,7 @@ var Group = new Class({
             return;
         }
 
-        if (destroyChildren)
-        {
-            var children = this.children;
-
-            for (var i = 0; i < children.size; i++)
-            {
-                var gameObject = children.entries[i];
-
-                //  Remove the event hook first or it'll go all recursive hell on us
-                gameObject.off(Events.DESTROY, this.remove, this);
-
-                gameObject.destroy();
-            }
-        }
-
-        this.children.clear();
+        this.clear(false, destroyChildren);
 
         if (keepAlive === false)
         {

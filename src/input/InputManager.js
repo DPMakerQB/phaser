@@ -458,7 +458,7 @@ var InputManager = new Class({
      */
     resetCursor: function (interactiveObject)
     {
-        if (interactiveObject.cursor)
+        if (interactiveObject.cursor && this.canvas)
         {
             this.canvas.style.cursor = this.defaultCursor;
         }
@@ -769,6 +769,25 @@ var InputManager = new Class({
         this.mousePointer.wheel(event);
 
         this.updateInputPlugins(CONST.MOUSE_WHEEL, this.mousePointerContainer);
+    },
+
+    /**
+     * Processes a pointer lock change event, as passed in by the MouseManager.
+     *
+     * @method Phaser.Input.InputManager#onPointerLockChange
+     * @fires Phaser.Input.Events#POINTERLOCK_CHANGE
+     * @private
+     * @since 3.19.0
+     *
+     * @param {MouseEvent} event - The native DOM Mouse event.
+     */
+    onPointerLockChange: function (event)
+    {
+        var isLocked = this.mouse.locked;
+
+        this.mousePointer.locked = isLocked;
+
+        this.events.emit(Events.POINTERLOCK_CHANGE, event, isLocked);
     },
 
     /**
