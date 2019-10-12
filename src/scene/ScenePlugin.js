@@ -571,7 +571,7 @@ var ScenePlugin = new Class({
 
     /**
      * Makes this Scene sleep then starts the Scene given.
-     * 
+     *
      * No checks are made to see if an instance of the given Scene is already running.
      * Because Scenes in Phaser are non-exclusive, you are allowed to run multiple
      * instances of them _at the same time_. This means, calling this function
@@ -601,7 +601,7 @@ var ScenePlugin = new Class({
      * @since 3.0.0
      *
      * @param {string} [key] - The Scene to stop.
-     * @param {string} data - The Scene to send.
+     * @param {any} [data] - Optional data object to pass to Scene.Systems.shutdown.
      *
      * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
      */
