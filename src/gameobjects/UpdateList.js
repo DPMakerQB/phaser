@@ -18,6 +18,7 @@ var SceneEvents = require('../scene/events');
  * Some or all of these Game Objects may also be part of the Scene's [Display List]{@link Phaser.GameObjects.DisplayList}, for Rendering.
  *
  * @class UpdateList
+ * @extends Phaser.Structs.ProcessQueue.<Phaser.GameObjects.GameObject>
  * @memberof Phaser.GameObjects
  * @constructor
  * @since 3.0.0
@@ -191,10 +192,12 @@ var UpdateList = new Class({
         this._active = [];
         this._destroy = [];
 
+        this.removeAllListeners();
+
         var eventEmitter = this.systems.events;
 
         eventEmitter.off(SceneEvents.PRE_UPDATE, this.preUpdate, this);
-        eventEmitter.off(SceneEvents.UPDATE, this.update, this);
+        eventEmitter.off(SceneEvents.UPDATE, this.sceneUpdate, this);
         eventEmitter.off(SceneEvents.SHUTDOWN, this.shutdown, this);
     },
 
@@ -210,7 +213,7 @@ var UpdateList = new Class({
     {
         this.shutdown();
 
-        this.scene.sys.events.off(SceneEvents.START, this.start, this);
+        this.systems.events.off(SceneEvents.START, this.start, this);
 
         this.scene = null;
         this.systems = null;
